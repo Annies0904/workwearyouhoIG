@@ -1,18 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
 
-function requireAdmin(req) {
-  const user = process.env.ADMIN_USER;
-  const pass = process.env.ADMIN_PASS;
-
-  const auth = req.headers.authorization || "";
-  const [type, encoded] = auth.split(" ");
-  if (!user || !pass || type !== "Basic" || !encoded) return false;
-
-  const decoded = Buffer.from(encoded, "base64").toString("utf8");
-  const [u, p] = decoded.split(":");
-  return u === user && p === pass;
-}
-
 function supabaseAdmin() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -21,7 +8,6 @@ function supabaseAdmin() {
 }
 
 export default async function handler(req, res) {
-
   const sb = supabaseAdmin();
 
   if (req.method === "GET") {
