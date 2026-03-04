@@ -1,3 +1,10 @@
+export default async function handler(req, res) {
+  if (req.method === "GET" && req.query.__ping === "1") {
+    return res.status(200).json({ ok: true, ping: true });
+  }
+
+  // 原本的程式碼繼續...
+}
 import { createClient } from "@supabase/supabase-js";
 
 function supabaseAdmin() {
