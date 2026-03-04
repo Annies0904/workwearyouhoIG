@@ -8,12 +8,11 @@ export default function TemplatesIndex() {
   async function load() {
     setErr("");
     const res = await fetch("/api/admin/templates");
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      const j = await res.json().catch(() => ({}));
-      setErr(j.error || `Load failed: ${res.status}`);
+      setErr(data.error || `Load failed: ${res.status}`);
       return;
     }
-    const data = await res.json();
     setTemplates(data.templates || []);
   }
 
@@ -25,12 +24,9 @@ export default function TemplatesIndex() {
     <main style={{ padding: 24, fontFamily: "system-ui" }}>
       <h1>Templates</h1>
       <p>
-        <Link href="/admin">← Back</Link> |{" "}
-        <Link href="/admin/templates/new">+ New</Link>
+        <Link href="/admin">← Back</Link> | <Link href="/admin/templates/new">+ New</Link>
       </p>
-
       {err && <p style={{ color: "crimson" }}>{err}</p>}
-
       <ul>
         {templates.map((t) => (
           <li key={t.id}>
