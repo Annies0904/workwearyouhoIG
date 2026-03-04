@@ -1,6 +1,26 @@
 import { NextResponse } from "next/server";
 
 export function middleware(req) {
+  if (req.nextUrl.searchParams.get("__mw") === "1") {
+    const auth = req.headers.get("authorization") || "";
+    return NextResponse.json(
+      {
+        ok: true,
+        mw: "cookie-session-allowlist-v1",
+        pathname: req.nextUrl.pathname,
+        hasAuthorizationHeader: auth.length > 0,
+        authorizationFirst60: auth.slice(0, 60),
+        hasAdminCookie: Boolean(req.cookies.get("admin_session")?.value),
+      },
+      { status: 200 }
+    );
+  }
+
+  // ...其餘 middleware (cookie allowlist 那版)
+}
+import { NextResponse } from "next/server";
+
+export function middleware(req) {
   const user = process.env.ADMIN_USER;
   const pass = process.env.ADMIN_PASS;
 
