@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
 export function middleware(req) {
-  // 診斷用：確認 production 是否吃到最新 middleware、以及是否有人塞 Authorization header
   if (req.nextUrl.searchParams.get("__mw") === "1") {
     const auth = req.headers.get("authorization") || "";
     return NextResponse.json(
@@ -11,11 +10,15 @@ export function middleware(req) {
         pathname: req.nextUrl.pathname,
         hasAuthorizationHeader: auth.length > 0,
         authorizationFirst60: auth.slice(0, 60),
+        cookieHeaderPresent: Boolean(req.headers.get("cookie")),
         hasAdminCookie: Boolean(req.cookies.get("admin_session")?.value),
       },
       { status: 200 }
     );
   }
+
+  // ...下面才是 allowlist + cookie 檢查
+}
 
   const user = process.env.ADMIN_USER;
   const pass = process.env.ADMIN_PASS;
