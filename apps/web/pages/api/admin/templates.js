@@ -21,10 +21,6 @@ function supabaseAdmin() {
 }
 
 export default async function handler(req, res) {
-  if (!requireAdmin(req)) {
-    res.setHeader("WWW-Authenticate", 'Basic realm="Admin"');
-    return res.status(401).json({ error: "Unauthorized" });
-  }
 
   const sb = supabaseAdmin();
 
