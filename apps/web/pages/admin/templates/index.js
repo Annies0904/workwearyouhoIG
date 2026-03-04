@@ -1,44 +1,53 @@
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import fs from "fs";
+import path from "path";
 
-export default function TemplatesIndex() {
-  const [templates, setTemplates] = useState([]);
-  const [err, setErr] = useState("");
+const DATA_PATH = path.join(process.cwd(), "data", "templates.json");
 
-  async function load() {
-    setErr("");
-    const res = await fetch("/api/admin/templates");
-    if (!res.ok) {
-      setErr(`Load failed: ${res.status}`);
-      return;
-    }
-    const data = await res.json();
-    setTemplates(data.templates || []);
+function requireAdmin(req) {
+  const user = process.env.ADMIN_USER;
+  const pass = process.env.ADMIN_PASS;
+
+  const auth = req.headers.authorization || "";
+  const [type, encoded] = auth.split(" ");
+  if (!user || !pass || type !== "Basic" || !encoded) return false;
+
+  const decoded = Buffer.from(encoded, "base64").toString("utf8");
+  const [u, p] = decoded.split(":");
+  return u === user && p === pass;
+}
+
+function readData() {
+  const raw = fs.readFileSync(DATA_PATH, "utf8");
+  return JSON.parse(raw);
+}
+
+function writeData(data) {
+  fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2) + "\n", "utf8");
+}
+
+export default function handler(req, res) {
+  if (!requireAdmin(req)) {
+    res.setHeader("WWW-Authenticate", 'Basic realm="Admin"');
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
-  useEffect(() => {
-    load();
-  }, []);
+  if (req.method === "GET") {
+    return res.status(200).json(readData());
+  }
 
-  return (
-    <main style={{ padding: 24, fontFamily: "system-ui" }}>
-      <h1>Templates</h1>
-      <p>
-        <Link href="/admin">← Back</Link> |{" "}
-        <Link href="/admin/templates/new">+ New</Link>
-      </p>
+  if (req.method === "POST") {
+    const { id, title, content } = req.body || {};
+    if (!id || !title || !content) {
+      return res.status(400).json({ error: "id, title, content are required" });
+    }
+    const data = readData();
+    if (data.templates.some((t) => t.id === id)) {
+      return res.status(409).json({ error: "id already exists" });
+    }
+    data.templates.push({ id, title, content });
+    writeData(data);
+    return res.status(201).json({ ok: true });
+  }
 
-      {err && <p style={{ color: "crimson" }}>{err}</p>}
-
-      <ul>
-        {templates.map((t) => (
-          <li key={t.id}>
-            <Link href={`/admin/templates/${encodeURIComponent(t.id)}`}>
-              {t.title} ({t.id})
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </main>
-  );
+  return res.status(405).json({ error: "Method not allowed (for MVP only GET/POST)" });
 }
