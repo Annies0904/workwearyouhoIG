@@ -22,15 +22,15 @@ export function middleware(req) {
   }
 
   // 若 Authorization header / base64 非法，直接視為未授權（避免拋錯變 500）
-  let decoded = "";
-  try {
-    decoded = Buffer.from(encoded, "base64").toString("utf8");
-  } catch {
-    return new NextResponse("Unauthorized", {
-      status: 401,
-      headers: { "WWW-Authenticate": 'Basic realm="Admin"' },
-    });
-  }
+ let decoded = "";
+try {
+  decoded = atob(encoded); // Edge runtime friendly
+} catch {
+  return new NextResponse("Unauthorized", {
+    status: 401,
+    headers: { "WWW-Authenticate": 'Basic realm="Admin"' },
+  });
+}
 
   const sep = decoded.indexOf(":");
   if (sep < 0) {
