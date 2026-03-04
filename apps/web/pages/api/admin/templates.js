@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     if (req.method === "GET") {
       const { data, error } = await sb
         .from("templates")
-        .select("id,title,content,created_at,updated_at")
+        .select("id,title,created_at,updated_at")
         .order("updated_at", { ascending: false });
 
       if (error) return res.status(500).json({ error: error.message });
