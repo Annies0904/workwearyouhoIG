@@ -1,0 +1,48 @@
+name: Verify Deployment Target Repository
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  verify-target-repo:
+    name: Confirm Correct Target Repository
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Check repository identity
+        run: |
+          EXPECTED_REPO="Annies0904/workwearyouhoIG"
+          ACTUAL_REPO="${{ github.repository }}"
+          echo "Expected repository : $EXPECTED_REPO"
+          echo "Actual repository   : $ACTUAL_REPO"
+          if [ "$ACTUAL_REPO" != "$EXPECTED_REPO" ]; then
+            echo "::error::Deployment is targeting the wrong repository!"
+            echo "::error::Expected: $EXPECTED_REPO  |  Got: $ACTUAL_REPO"
+            exit 1
+          fi
+          echo "✅ Deployment target is correct: $ACTUAL_REPO"
+
+      - name: Confirm old repository is not used
+        run: |
+          OLD_REPO="quoteapp_yh01"
+          ACTUAL_REPO="${{ github.repository }}"
+          if echo "$ACTUAL_REPO" | grep -q "$OLD_REPO"; then
+            echo "::error::This workflow is running in the old repository ($OLD_REPO). Please migrate all operations to Annies0904/workwearyouhoIG."
+            exit 1
+          fi
+          echo "✅ Confirmed: operations are NOT running in $OLD_REPO"
+
+      - name: Summary
+        run: |
+          echo "### ✅ Deployment Target Verified" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Target Repository | \`${{ github.repository }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branch | \`${{ github.ref_name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Triggered by | \`${{ github.event_name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All deployments, PR tasks, and CI/CD operations are correctly targeting \`Annies0904/workwearyouhoIG\`." >> $GITHUB_STEP_SUMMARY
