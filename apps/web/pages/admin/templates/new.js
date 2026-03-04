@@ -36,7 +36,7 @@ export default function NewTemplate() {
 
       <form onSubmit={submit} style={{ display: "grid", gap: 12, maxWidth: 640 }}>
         <label>
-          ID (英文/數字/短字串)
+          ID
           <input value={id} onChange={(e) => setId(e.target.value)} style={{ width: "100%" }} />
         </label>
         <label>
@@ -45,12 +45,7 @@ export default function NewTemplate() {
         </label>
         <label>
           Content
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={6}
-            style={{ width: "100%" }}
-          />
+          <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={6} style={{ width: "100%" }} />
         </label>
         <button type="submit">Create</button>
       </form>
