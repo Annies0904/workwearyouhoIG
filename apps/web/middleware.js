@@ -21,7 +21,7 @@ export function middleware(req) {
     });
   }
 
-  // Basic auth 的字串需要是 Latin-1；若含不合法字元，直接當作未授權
+  // 若 Authorization header / base64 非法，直接視為未授權（避免拋錯變 500）
   let decoded = "";
   try {
     decoded = Buffer.from(encoded, "base64").toString("utf8");
@@ -32,16 +32,16 @@ export function middleware(req) {
     });
   }
 
-  const i = decoded.indexOf(":");
-  if (i < 0) {
+  const sep = decoded.indexOf(":");
+  if (sep < 0) {
     return new NextResponse("Unauthorized", {
       status: 401,
       headers: { "WWW-Authenticate": 'Basic realm="Admin"' },
     });
   }
 
-  const u = decoded.slice(0, i);
-  const p = decoded.slice(i + 1);
+  const u = decoded.slice(0, sep);
+  const p = decoded.slice(sep + 1);
 
   if (u === user && p === pass) return NextResponse.next();
 
