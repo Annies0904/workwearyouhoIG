@@ -1,23 +1,33 @@
 # workwearyouhoIG
 
-## 部署目標 / Deployment Target
+此專案的所有程式碼、PR 推送、部署設定（Vercel / Render）均指向本倉庫：
 
-**正確的目標 Repository：** `Annies0904/workwearyouhoIG`
+**`Annies0904/workwearyouhoIG`**
 
-所有部署指令、PR 任務、CI/CD 工作流程及協助作業均應指向本 repository：
-`https://github.com/Annies0904/workwearyouhoIG`
+## 確認事項
 
-All deployment commands, pull request tasks, CI/CD workflows, and assistance operations must target this repository:
-`https://github.com/Annies0904/workwearyouhoIG`
+| 項目 | 狀態 | 說明 |
+|------|------|------|
+| Git remote origin | ✅ 正確 | `https://github.com/Annies0904/workwearyouhoIG` |
+| PR 推送目標 | ✅ 正確 | 僅推送至 `Annies0904/workwearyouhoIG` |
+| Vercel 部署 | ⚠️ 待確認 | 請確認 Vercel 專案已連結至 `Annies0904/workwearyouhoIG` |
+| Render 部署 | ⚠️ 待確認 | 請確認 Render 服務已連結至 `Annies0904/workwearyouhoIG` |
+| 與 quoteapp_yh01 的關係 | ✅ 無關聯 | 本倉庫與 `quoteapp_yh01` 完全獨立，無共用設定 |
 
-> ⚠️ **重要提醒 / Important Notice**
-> 請勿將任何資源或變更推送至舊 repository（`quoteapp_yh01`）。
-> Do **not** push any resources or changes to the old repository (`quoteapp_yh01`).
+## Vercel 設定步驟
 
-## 確認清單 / Verification Checklist
+若要確認或重新連結 Vercel 至本倉庫：
 
-- [x] 主要程式碼已推送至 `Annies0904/workwearyouhoIG`
-- [x] CI/CD 工作流程指向 `Annies0904/workwearyouhoIG`
-- [x] PR 任務目標為 `Annies0904/workwearyouhoIG`
-- [x] 協助作業已切換至 `Annies0904/workwearyouhoIG`
-- [x] 不再於 `quoteapp_yh01` 執行任何操作
+1. 登入 [Vercel Dashboard](https://vercel.com/dashboard)
+2. 進入對應的 Project → **Settings** → **Git**
+3. 確認 **Connected Git Repository** 顯示為 `Annies0904/workwearyouhoIG`
+4. 若顯示其他倉庫（如 `quoteapp_yh01`），點選 **Disconnect** 後重新連結正確倉庫
+
+## Render 設定步驟
+
+若要確認或重新連結 Render 至本倉庫：
+
+1. 登入 [Render Dashboard](https://dashboard.render.com/)
+2. 進入對應的 Service → **Settings**
+3. 確認 **Repository** 欄位顯示為 `Annies0904/workwearyouhoIG`
+4. 若顯示其他倉庫（如 `quoteapp_yh01`），需刪除現有 service 並重新建立，選擇正確倉庫
