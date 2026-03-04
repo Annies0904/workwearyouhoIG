@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
 export function middleware(req) {
-  const { pathname } = req.nextUrl;
 
   // 保護 /admin 與 /api/admin
   if (!pathname.startsWith("/admin") && !pathname.startsWith("/api/admin")) {
