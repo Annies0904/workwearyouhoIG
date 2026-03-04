@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 export function middleware(req) {
+  // 診斷用：確認 production 是否吃到最新 middleware、以及是否有人塞 Authorization header
   if (req.nextUrl.searchParams.get("__mw") === "1") {
     const auth = req.headers.get("authorization") || "";
     return NextResponse.json(
@@ -16,11 +17,6 @@ export function middleware(req) {
     );
   }
 
-  // ...其餘 middleware (cookie allowlist 那版)
-}
-import { NextResponse } from "next/server";
-
-export function middleware(req) {
   const user = process.env.ADMIN_USER;
   const pass = process.env.ADMIN_PASS;
 
@@ -31,9 +27,7 @@ export function middleware(req) {
   const { pathname } = req.nextUrl;
 
   // --- Allowlist (避免無限 redirect) ---
-  // 放行登入頁本身
   if (pathname === "/admin/login") return NextResponse.next();
-  // 放行登入/登出 API（不然你永遠無法拿到 cookie）
   if (pathname === "/api/admin/login" || pathname === "/api/admin/logout") {
     return NextResponse.next();
   }
