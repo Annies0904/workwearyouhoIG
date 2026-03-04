@@ -4,51 +4,21 @@ export function middleware(req) {
   const user = process.env.ADMIN_USER;
   const pass = process.env.ADMIN_PASS;
 
-  // 沒設定就拒絕（避免後台裸奔）
   if (!user || !pass) {
-    return new NextResponse("Admin credentials are not configured.", {
-      status: 401,
-    });
+    return new NextResponse("Admin credentials are not configured.", { status: 401 });
   }
 
-  const auth = req.headers.get("authorization") || "";
-  const [type, encoded] = auth.split(" ");
+  const session = req.cookies.get("admin_session")?.value;
+  if (session === "1") return NextResponse.next();
 
-  if (type !== "Basic" || !encoded) {
-    return new NextResponse("Authentication required", {
-      status: 401,
-      headers: { "WWW-Authenticate": 'Basic realm="Admin"' },
-    });
+  // 沒登入：若是 API，回 JSON；若是頁面，導去 /admin/login（你等下可做簡單頁）
+  if (req.nextUrl.pathname.startsWith("/api/")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // 若 Authorization header / base64 非法，直接視為未授權（避免拋錯變 500）
-  let decoded = "";
-  try {
-    decoded = atob(encoded); // Edge runtime friendly
-  } catch {
-    return new NextResponse("Unauthorized", {
-      status: 401,
-      headers: { "WWW-Authenticate": 'Basic realm="Admin"' },
-    });
-  }
-
-  const sep = decoded.indexOf(":");
-  if (sep < 0) {
-    return new NextResponse("Unauthorized", {
-      status: 401,
-      headers: { "WWW-Authenticate": 'Basic realm="Admin"' },
-    });
-  }
-
-  const u = decoded.slice(0, sep);
-  const p = decoded.slice(sep + 1);
-
-  if (u === user && p === pass) return NextResponse.next();
-
-  return new NextResponse("Unauthorized", {
-    status: 401,
-    headers: { "WWW-Authenticate": 'Basic realm="Admin"' },
-  });
+  const url = req.nextUrl.clone();
+  url.pathname = "/admin/login";
+  return NextResponse.redirect(url);
 }
 
 export const config = {
