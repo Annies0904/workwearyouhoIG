@@ -1,10 +1,3 @@
-export default async function handler(req, res) {
-  if (req.method === "GET" && req.query.__ping === "1") {
-    return res.status(200).json({ ok: true, ping: true });
-  }
-
-  // 原本的程式碼繼續...
-}
 import { createClient } from "@supabase/supabase-js";
 
 function supabaseAdmin() {
@@ -15,29 +8,33 @@ function supabaseAdmin() {
 }
 
 export default async function handler(req, res) {
-  const sb = supabaseAdmin();
+  try {
+    const sb = supabaseAdmin();
 
-  if (req.method === "GET") {
-    const { data, error } = await sb
-      .from("templates")
-      .select("id,title,content,created_at,updated_at")
-      .order("updated_at", { ascending: false });
+    if (req.method === "GET") {
+      const { data, error } = await sb
+        .from("templates")
+        .select("id,title,content,created_at,updated_at")
+        .order("updated_at", { ascending: false });
 
-    if (error) return res.status(500).json({ error: error.message });
-    return res.status(200).json({ templates: data || [] });
-  }
-
-  if (req.method === "POST") {
-    const { id, title, content } = req.body || {};
-    if (!id || !title || !content) {
-      return res.status(400).json({ error: "id, title, content are required" });
+      if (error) return res.status(500).json({ error: error.message });
+      return res.status(200).json({ templates: data || [] });
     }
 
-    const { error } = await sb.from("templates").insert([{ id, title, content }]);
-    if (error) return res.status(400).json({ error: error.message });
+    if (req.method === "POST") {
+      const { id, title, content } = req.body || {};
+      if (!id || !title || !content) {
+        return res.status(400).json({ error: "id, title, content are required" });
+      }
 
-    return res.status(201).json({ ok: true });
+      const { error } = await sb.from("templates").insert([{ id, title, content }]);
+      if (error) return res.status(400).json({ error: error.message });
+
+      return res.status(201).json({ ok: true });
+    }
+
+    return res.status(405).json({ error: "Method not allowed" });
+  } catch (e) {
+    return res.status(500).json({ error: e?.message || "Internal Server Error" });
   }
-
-  return res.status(405).json({ error: "Method not allowed" });
 }
