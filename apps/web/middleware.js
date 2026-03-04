@@ -4,7 +4,6 @@ export function middleware(req) {
   const { pathname } = req.nextUrl;
 
   // 只保護 /admin 與其子路由
-  if (!pathname.startsWith("/admin")) return NextResponse.next();
 
   const user = process.env.ADMIN_USER;
   const pass = process.env.ADMIN_PASS;
