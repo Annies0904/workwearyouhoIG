@@ -21,3 +21,37 @@ All deployment commands, pull request tasks, CI/CD workflows, and assistance ope
 - [x] PR 任務目標為 `Annies0904/workwearyouhoIG`
 - [x] 協助作業已切換至 `Annies0904/workwearyouhoIG`
 - [x] 不再於 `quoteapp_yh01` 執行任何操作
+
+---
+
+## 刪除部署 / Teardown
+
+如需完全移除整個部署（容器、網路、資料庫 Volume 及本地映像檔），請執行：
+
+To completely remove the entire deployment (containers, networks, database volumes, and locally-built images), run:
+
+```bash
+bash teardown.sh
+```
+
+也可以使用 `--dry-run` 旗標先預覽將要執行的指令，不會實際刪除任何東西：
+
+Use the `--dry-run` flag to preview the commands without executing them:
+
+```bash
+bash teardown.sh --dry-run
+```
+
+或者，若想手動逐步操作，可直接執行以下 Docker Compose 指令：
+
+Alternatively, to perform the steps manually:
+
+```bash
+# 停止並移除容器、網路、具名 Volume（資料庫資料）及本地映像檔
+# Stop and remove containers, networks, named volumes (database data), and locally-built images
+docker compose down --volumes --remove-orphans --rmi local
+```
+
+> ⚠️ **警告 / Warning**
+> 執行上述指令後，**所有資料庫資料將永久刪除**，且無法復原。請先備份重要資料。
+> After running the above command, **all database data will be permanently deleted** and cannot be recovered. Back up any important data first.
